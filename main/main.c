@@ -12,8 +12,13 @@
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 
-#define DATAPIN 21
-#define CLOCKPIN 22
+<<<<<<< HEAD
+#define dataPIN 21
+#define clockPIN 22
+=======
+#define DataPin 21
+#define ClockPin 22
+>>>>>>> e2d2aca59da491dd4e57f8f2fbf102c3e808bad2
 #define MSBFIRST 0
 #define LSBFIRST 1
 
@@ -66,8 +71,8 @@ void shiftOut(int dataPin,int clockPin, int edian, int command) {
 
 void sendCommandSHT(int command, int dataPin, int clockPin) {
    int ack;
-   gpio_set_direction(dataPin, output_only);
-   gpio_set_direction(clockPin, output_only);
+   gpio_set_direction(dataPin, GPIO_MODE_OUTPUT);
+   gpio_set_direction(clockPin, GPIO_MODE_OUTPUT);
    gpio_set_level(dataPin, 1);
    gpio_set_level(clockPin,1);
    gpio_set_level(dataPin,0);
@@ -80,7 +85,7 @@ void sendCommandSHT(int command, int dataPin, int clockPin) {
    
    //Verify we get correct ack
    gpio_set_level(clockPin, 1);
-   gpio_set_direction(dataPin, input_only);
+   gpio_set_direction(dataPin, GPIO_MODE_INPUT);
    ack = gpio_get_level(dataPin);
    if (ack != 0) {
       printf("ACK Error 1");
@@ -90,7 +95,7 @@ void sendCommandSHT(int command, int dataPin, int clockPin) {
 void waitForResultSHT(int dataPin) {
    int i;
    int ack;
-   gpio_set_direction(dataPin, input_only);
+   gpio_set_direction(dataPin, GPIO_MODE_INPUT);
    
    for(i = 0; i < 100; ++i) {
       vTaskDeylay(10/portTICK_PERIOD_MS);
@@ -122,19 +127,19 @@ int getData16SHT(int dataPin, int clockPin) {
    int val;
    
    // Get the most significant bits
-   gpio_set_direction(dataPin, input_only);
-   gpio_set_direction(clockPin, output_only);
+   gpio_set_direction(dataPin, GPIO_MODE_INPUT);
+   gpio_set_direction(clockPin, GPIO_MODE_OUTPUT);
    val = shiftIn(dataPin, clockPin, 8);
    val = val << 8;
    
    //Send the required ack
-   gpio_set_direction(dataPin, output_only);
+   gpio_set_direction(dataPin, GPIO_MODE_OUTPUT);
    gpio_set_level(dataPin, 0);
    gpio_set_level(clockPin, 1);
    gpio_set_level(clockPin, 0);
    
    //Get the least significant bits
-   gpio_set_direction(dataPin, input_only);
+   gpio_set_direction(dataPin, GPIO_MODE_INPUT);
    val |= shiftIn(dataPin,clockPin, 8);
    
    return val;   
@@ -142,7 +147,7 @@ int getData16SHT(int dataPin, int clockPin) {
 
 void skipCrcSHT(int dataPin, int clockPin) {
    //Skip CRC
-   gpio_set_direction(dataPin, output_only);
+   gpio_set_direction(dataPin, GPIO_MODE_OUTPUT);
    gpio_set_level(dataPin, 0);
    gpio_set_level(clockPin, 1);
    gpio_set_level(clockPin, 0);

@@ -12,8 +12,8 @@
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 
-#define dataPin 21
-#define clockPin 22
+#define DATAPIN 21
+#define CLOCKPIN 22
 #define MSBFIRST 0
 #define LSBFIRST 1
 
@@ -22,8 +22,8 @@ void gpio_conf() {
    gp_conf.mode = GPIO_MODE_OUTPUT;
    gp_conf.pin_bit_mask = ((1ULL << dataPin) | (1ULL << clockPin));
    gp_conf.pull_down_en = 0;
-	gp_conf.pull_up_en = 1;
-	gpio_config(&gp_conf);
+   gp_conf.pull_up_en = 1;
+   gpio_config(&gp_conf);
 }
 
 void shiftOut(int dataPin,int clockPin, int edian, int command) {
@@ -37,11 +37,11 @@ void shiftOut(int dataPin,int clockPin, int edian, int command) {
                gpio_set_level(clockPin,1); 
             }
             else {
-               gpio_set_level(dataPin,0);
-               gpio_set_level(clockPin,1);
+               gpio_set_level(dataPin, 0);
+               gpio_set_level(clockPin, 1);
             }
             vTaskDeylay(1/portTICK_PERIOD_MS);
-            gpio_set_level(clockPin,0);
+            gpio_set_level(clockPin, 0);
             shiftbit = shiftbit >> 1;
          }
          break;
